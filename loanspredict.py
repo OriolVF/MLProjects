@@ -19,3 +19,19 @@ loans_2007 = loans_2007.drop(["zip_code", "out_prncp", "out_prncp_inv", "total_p
 loans_2007 = loans_2007.drop(["total_rec_int", "total_rec_late_fee", "recoveries", "collection_recovery_fee", "last_pymnt_d", "last_pymnt_amnt"], axis=1)
 print(loans_2007.ix[1])
 print(loans_2007.shape[1])
+
+#check for null counts
+loans = pd.read_csv("filtered_loans_2007.csv")
+null_counts=[]
+null_counts = loans.isnull().sum()
+print(null_counts)
+
+#drop null rows and null columns
+loans = loans.drop("pub_rec_bankruptcies", axis=1)
+loans = loans.dropna(axis=0)
+print(loans.dtypes.value_counts())
+
+#get object columns
+object_columns_df = loans.select_dtypes(include=["object"])
+print(object_columns_df.iloc[0])
+
