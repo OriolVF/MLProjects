@@ -35,3 +35,42 @@ print(loans.dtypes.value_counts())
 object_columns_df = loans.select_dtypes(include=["object"])
 print(object_columns_df.iloc[0])
 
+#check unique values
+cols = ['home_ownership', 'verification_status', 'emp_length', 'term', 'addr_state']
+for col in cols:
+    print(loans[col].value_counts())
+    
+
+#check unique values in columns purpose and title
+print(loans["purpose"].value_counts())
+print(loans["title"].value_counts())
+    
+    mapping_dict = {
+    "emp_length": {
+        "10+ years": 10,
+        "9 years": 9,
+        "8 years": 8,
+        "7 years": 7,
+        "6 years": 6,
+        "5 years": 5,
+        "4 years": 4,
+        "3 years": 3,
+        "2 years": 2,
+        "1 year": 1,
+        "< 1 year": 0,
+        "n/a": 0
+    }
+}
+
+
+#Remove columns that would require too much processing. Convert columns to floats
+loans = loans.drop(["last_credit_pull_d", "earliest_cr_line", "addr_state", "title"], axis=1)
+loans["int_rate"] = loans["int_rate"].str.rstrip("%").astype("float")
+loans["revol_util"] = loans["revol_util"].str.rstrip("%").astype("float")
+loans = loans.replace(mapping_dict)
+
+#Get dummy columns for categorical columns
+cat_columns = ["home_ownership", "verification_status", "purpose", "term"]
+dummy_df = pd.get_dummies(loans[cat_columns])
+loans = pd.concat([loans, dummy_df], axis=1)
+loans = loans.drop(cat_columns, axis=1)
